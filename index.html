@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RideReady - Car Booking Service</title>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2c3e50;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #34495e;
+      --success-color: #2ecc71;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: var(--dark-color);
+    }
+    
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .logo span {
+      color: var(--accent-color);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav ul li {
+      margin-left: 1.5rem;
+    }
+    
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    nav ul li a:hover {
+      color: var(--light-color);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .hero {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/api/placeholder/1200/500');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 4rem 2rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .booking-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .booking-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    button.btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    button.btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    button.btn:active {
+      transform: translateY(0);
+    }
+    
+    .cars-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .car-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .car-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .car-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .car-details {
+      padding: 1.5rem;
+    }
+    
+    .car-name {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    
+    .car-type {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .car-features {
+      display: flex;
+      margin-bottom: 1rem;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      margin-right: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .car-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--secondary-color);
+    }
+    
+    .car-price span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #777;
+    }
+    
+    .car-action {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .car-action button {
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+    
+    .car-action button:last-child {
+      margin-right: 0;
+      background-color: var(--accent-color);
+    }
+    
+    .car-action button:last-child:hover {
+      background-color: #c0392b;
+    }
+    
+    .section-heading {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .section-heading h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .section-heading p {
+      color: #777;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      overflow: auto;
+    }
+    
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover {
+      color: var(--dark-color);
+    }
+    
+    .modal-title {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1rem;
+    }
+    
+    .confirmation-message {
+      text-align: center;
+      padding: 2rem;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .confirmation-message h3 {
+      color: var(--success-color);
+      margin-bottom: 1rem;
+    }
+    
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    
+    .footer-links a {
+      color: var(--light-color);
+      margin: 0 1rem;
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      nav ul li {
+        margin-left: 1rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Ride<span>Ready</span></div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Cars</a></li>
+        <li><a href="#">Locations</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <section class="hero">
+      <h1>Your Journey Starts Here</h1>
+      <p>Book your dream ride in minutes. We offer the best cars at competitive prices with no hidden fees.</p>
+      <button class="btn">Learn More</button>
+    </section>
+    
+    <section class="booking-container">
+      <div class="section-heading">
+        <h2>Find Your Perfect Car</h2>
+        <p>Search our extensive fleet and book in three simple steps</p>
+      </div>
+      
+      <form class="booking-form" id="searchForm">
+        <div class="form-group">
+          <label for="pickup-location">Pickup Location</label>
+          <input type="text" id="pickup-location" placeholder="Enter city or airport">
+        </div>
+        
+        <div class="form-group">
+          <label for="pickup-date">Pickup Date</label>
+          <input type="date" id="pickup-date">
+        </div>
+        
+        <div class="form-group">
+          <label for="return-date">Return Date</label>
+          <input type="date" id="return-date">
+        </div>
+        
+        <div class="form-group">
+          <label for="car-type">Car Type</label>
+          <select id="car-type">
+            <option value="">All Types</option>
+            <option value="economy">Economy</option>
+            <option value="compact">Compact</option>
+            <option value="suv">SUV</option>
+            <option value="luxury">Luxury</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn" id="searchButton">Search Cars</button>
+        </div>
+      </form>
+    </section>
+    
+    <section>
+      <div class="section-heading">
+        <h2>Available Cars</h2>
+        <p>Browse our selection of top-rated vehicles</p>
+      </div>
+      
+      <div class="cars-container" id="carsContainer">
+        <!-- Cars will be dynamically added here -->
+      </div>
+    </section>
+  </div>
+  
+  <div id="bookingModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 class="modal-title">Complete Your Booking</h2>
+      
+      <div id="bookingForm">
+        <div class="form-group">
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" placeholder="Enter your full name">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email address">
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Enter your phone number">
+        </div>
+        
+        <div class="form-group">
+          <label for="driver-license">Driver's License Number</label>
+          <input type="text" id="driver-license" placeholder="Enter your driver's license number">
+        </div>
+        
+        <div class="form-group">
+          <label for="payment-method">Payment Method</label>
+          <select id="payment-method">
+            <option value="">Select payment method</option>
+            <option value="credit-card">Credit Card</option>
+            <option value="paypal">PayPal</option>
+            <option value="bank-transfer">Bank Transfer</option>
+          </select>
+        </div>
+        
+        <button type="button" class="btn" id="confirmBookingBtn">Confirm Booking</button>
+      </div>
+      
+      <div id="confirmationMessage" class="confirmation-message" style="display: none;">
+        <h3>Booking Confirmed!</h3>
+        <p>Thank you for your booking. A confirmation has been sent to your email.</p>
+        <p>Your booking reference: <strong id="bookingReference">XYZ123</strong></p>
+        <button type="button" class="btn" id="closeModalBtn">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <div class="logo">Ride<span>Ready</span></div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">FAQ</a>
+      <a href="#">Support</a>
+    </div>
+    <p>&copy; 2025 RideReady. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    // Sample car data
+    const cars = [
+      {
+        id: 1,
+        name: "Toyota Corolla",
+        type: "Economy",
+        image: "/api/placeholder/400/200",
+        seats: 5,
+        luggage: 2,
+        transmission: "Automatic",
+        price: 45,
+        available: true
+      },
+      {
+        id: 2,
+        name: "Honda Civic",
+        type: "Compact",
+        image: "/api/placeholder/400/200",
+        seats: 5,
+        luggage: 2,
+        transmission: "Automatic",
+        price: 48,
+        available: true
+      },
+      {
+        id: 3,
+        name: "Ford Explorer",
+        type: "SUV",
+        image: "/api/placeholder/400/200",
+        seats: 7,
+        luggage: 4,
+        transmission: "Automatic",
+        price: 85,
+        available: true
+      },
+      {
+        id: 4,
+        name: "Mercedes C-Class",
+        type: "Luxury",
+        image: "/api/placeholder/400/200",
+        seats: 5,
+        luggage: 3,
+        transmission: "Automatic",
+        price: 120,
+        available: true
+      },
+      {
+        id: 5,
+        name: "Hyundai Elantra",
+        type: "Economy",
+        image: "/api/placeholder/400/200",
+        seats: 5,
+        luggage: 2,
+        transmission: "Automatic",
+        price: 42,
+        available: true
+      },
+      {
+        id: 6,
+        name: "BMW 5 Series",
+        type: "Luxury",
+        image: "/api/placeholder/400/200",
+        seats: 5,
+        luggage: 3,
+        transmission: "Automatic",
+        price: 135,
+        available: true
+      }
+    ];
+    
+    // DOM elements
+    const carsContainer = document.getElementById('carsContainer');
+    const searchForm = document.getElementById('searchForm');
+    const searchButton = document.getElementById('searchButton');
+    const modal = document.getElementById('bookingModal');
+    const closeBtn = document.querySelector('.close');
+    const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+    const confirmationMessage = document.getElementById('confirmationMessage');
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingReference = document.getElementById('bookingReference');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    
+    // Function to display cars
+    function displayCars(carsToDisplay) {
+      carsContainer.innerHTML = '';
+      
+      if (carsToDisplay.length === 0) {
+        carsContainer.innerHTML = '<p class="no-results">No cars available for the selected criteria. Please try different search parameters.</p>';
+        return;
+      }
+      
+      carsToDisplay.forEach(car => {
+        const carCard = document.createElement('div');
+        carCard.className = 'car-card';
+        
+        carCard.innerHTML = `
+          <img src="${car.image}" alt="${car.name}" class="car-img">
+          <div class="car-details">
+            <h3 class="car-name">${car.name}</h3>
+            <p class="car-type">${car.type}</p>
+            <div class="car-features">
+              <div class="feature">
+                <span>🧑</span> ${car.seats} Seats
+              </div>
+              <div class="feature">
+                <span>🧳</span> ${car.luggage} Luggage
+              </div>
+              <div class="feature">
+                <span>⚙️</span> ${car.transmission}
+              </div>
+            </div>
+            <div class="car-price">
+              $${car.price}<span>/day</span>
+            </div>
+            <div class="car-action">
+              <button class="btn view-details" data-id="${car.id}">View Details</button>
+              <button class="btn book-now" data-id="${car.id}">Book Now</button>
+            </div>
+          </div>
+        `;
+        
+        carsContainer.appendChild(carCard);
+      });
+      
+      // Add event listeners to booking buttons
+      document.querySelectorAll('.book-now').forEach(button => {
+        button.addEventListener('click', () => {
+          modal.style.display = 'block';
+        });
+      });
+    }
+    
+    // Initialize page with all cars
+    displayCars(cars);
+    
+    // Search functionality
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const pickupLocation = document.getElementById('pickup-location').value.toLowerCase();
+      const carType = document.getElementById('car-type').value.toLowerCase();
+      
+      let filteredCars = [...cars];
+      
+      // Filter by car type if selected
+      if (carType) {
+        filteredCars = filteredCars.filter(car => car.type.toLowerCase().includes(carType));
+      }
+      
+      displayCars(filteredCars);
+    });
+    
+    // Modal functionality
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      resetModal();
+    });
+    
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      resetModal();
+    });
+    
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+        resetModal();
+      }
+    });
+    
+    confirmBookingBtn.addEventListener('click', () => {
+      // Validate form (simple validation)
+      const fullname = document.getElementById('fullname').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const driverLicense = document.getElementById('driver-license').value;
+      const paymentMethod = document.getElementById('payment-method').value;
+      
+      if (!fullname || !email || !phone || !driverLicense || !paymentMethod) {
+        alert('Please fill in all fields to complete your booking.');
+        return;
+      }
+      
+      // Generate random booking reference
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let reference = '';
+      for (let i = 0; i < 6; i++) {
+        reference += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      
+      // Display confirmation message
+      bookingReference.textContent = reference;
+      bookingForm.style.display = 'none';
+      confirmationMessage.style.display = 'block';
+    });
+    
+    function resetModal() {
+      bookingForm.style.display = 'block';
+      confirmationMessage.style.display = 'none';
+      
+      // Reset form fields
+      document.getElementById('fullname').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('driver-license').value = '';
+      document.getElementById('payment-method').value = '';
+    }
+    
+    // Set minimum date for date inputs
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const formatDate = (date) => {
+      return date.toISOString().split('T')[0];
+    };
+    
+    document.getElementById('pickup-date').min = formatDate(today);
+    document.getElementById('return-date').min = formatDate(tomorrow);
+    
+    // Update return date min value when pickup date changes
+    document.getElementById('pickup-date').addEventListener('change', function() {
+      const pickupDate = new Date(this.value);
+      const nextDay = new Date(pickupDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      document.getElementById('return-date').min = formatDate(nextDay);
+      
+      // If current return date is before new pickup date + 1
+      const returnDateInput = document.getElementById('return-date');
+      const returnDate = new Date(returnDateInput.value);
+      
+      if (returnDate <= pickupDate) {
+        returnDateInput.value = formatDate(nextDay);
+      }
+    });
+  </script>
+</body>
+</html>

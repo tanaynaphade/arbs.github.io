@@ -961,4 +961,350 @@
           <img src="${car.image}" alt="${car.name}" class="car-img">
           <div class="car-details">
             <h3 class="car-name">${car.name}</h3>
-            <p class
+            <p class="car-type">${car.type}</p>
+            <div class="car-features">
+              <span class="feature">${car.seats} Seats</span>
+              <span class="feature">${car.luggage} Luggage</span>
+              <span class="feature">${car.transmission}</span>
+            </div>
+            <p class="car-price">$${car.price}<span>/day</span></p>
+            <div class="car-action">
+              <button class="btn book-btn" data-car-id="${car.id}">Book Now</button>
+              <button class="btn">View Details</button>
+            </div>
+          </div>
+        `;
+        
+        carsContainer.appendChild(carCard);
+        
+        // Add event listener to book button
+        const bookBtn = carCard.querySelector('.book-btn');
+        bookBtn.addEventListener('click', () => openBookingModal(car));
+      });
+    }
+    
+    // Open the booking modal
+    function openBookingModal(car) {
+      selectedCar = car;
+      
+      // Display car details in modal
+      selectedCarDetails.innerHTML = `
+        <h3>${car.name} - ${car.type}</h3>
+        <p class="car-price">$${car.price}<span>/day</span></p>
+        <div class="car-features">
+          <span class="feature">${car.seats} Seats</span>
+          <span class="feature">${car.luggage} Luggage</span>
+          <span class="feature">${car.transmission}</span>
+        </div>
+      `;
+      
+      // If user is logged in, prefill the form
+      if (isLoggedIn() && currentUser) {
+        document.getElementById('fullname').value = currentUser.name || '';
+        document.getElementById('email').value = currentUser.email || '';
+        document.getElementById('phone').value = currentUser.phone || '';
+      }
+      
+      // Show booking form, hide confirmation
+      bookingForm.style.display = 'block';
+      confirmationMessage.style.display = 'none';
+      
+      // Show modal
+      modal.style.display = 'block';
+    }
+    
+    // Close the modal
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+    
+    // Confirm booking
+    function confirmBooking() {
+      if (!selectedCar) {
+        return;
+      }
+      
+      // In a real app, this would send data to the backend
+      const bookingData = {
+        carId: selectedCar.id,
+        pickupLocation: searchParams.pickupLocation || 'Default Location',
+        pickupDate: searchParams.pickupDate || new Date().toISOString(),
+        returnDate: searchParams.returnDate || new Date().toISOString(),
+        fullname: document.getElementById('fullname').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        driverLicense: document.getElementById('driver-license').value,
+        paymentMethod: document.getElementById('payment-method').value
+      };
+      
+      // Generate random booking reference
+      const randomRef = Math.random().toString(36).substring(2, 8).toUpperCase();
+      bookingReference.textContent = randomRef;
+      
+      // Hide booking form, show confirmation
+      bookingForm.style.display = 'none';
+      confirmationMessage.style.display = 'block';
+      
+      // In a real app, this would be an API call
+      console.log('Booking submitted:', bookingData);
+    }
+    
+    // Initialize Dashboard
+    function initDashboard() {
+      const bookingsList = document.getElementById('bookingsList');
+      const noBookings = document.getElementById('noBookings');
+      const bookingsLoader = document.getElementById('bookingsLoader');
+      const refreshBtn = document.getElementById('refreshBookings');
+      const exploreCarsBtn = document.getElementById('exploreCarsBtnDashboard');
+      
+      // In a real app, this would fetch from API
+      function fetchBookings() {
+        bookingsLoader.style.display = 'block';
+        bookingsList.style.display = 'none';
+        noBookings.style.display = 'none';
+        
+        // Simulate API call
+        setTimeout(() => {
+          bookingsLoader.style.display = 'none';
+          
+          // Demo data - in a real app, this would come from the API
+          const userBookings = [
+            {
+              id: 'B12345',
+              carName: 'Ford Explorer',
+              pickupDate: '2025-03-01T10:00',
+              returnDate: '2025-03-05T10:00',
+              pickupLocation: 'Seattle Airport',
+              totalPrice: 340,
+              status: 'confirmed'
+            },
+            {
+              id: 'B12346',
+              carName: 'Toyota Corolla',
+              pickupDate: '2025-01-15T09:00',
+              returnDate: '2025-01-17T17:00',
+              pickupLocation: 'Downtown Seattle',
+              totalPrice: 90,
+              status: 'completed'
+            }
+          ];
+          
+          if (userBookings.length > 0) {
+            bookingsList.innerHTML = '';
+            
+            userBookings.forEach(booking => {
+              const pickupDate = new Date(booking.pickupDate);
+              const returnDate = new Date(booking.returnDate);
+              
+              const bookingItem = document.createElement('div');
+              bookingItem.className = 'booking-item';
+              bookingItem.innerHTML = `
+                <div>
+                  <p class="booking-id">${booking.id}</p>
+                  <p>${booking.carName}</p>
+                </div>
+                <div>
+                  <p><strong>Pickup:</strong> ${formatDate(pickupDate)}</p>
+                  <p><strong>Return:</strong> ${formatDate(returnDate)}</p>
+                </div>
+                <div>
+                  <p><strong>Location:</strong> ${booking.pickupLocation}</p>
+                  <p><strong>Total:</strong> $${booking.totalPrice}</p>
+                </div>
+                <div>
+                  <span class="booking-status status-${booking.status}">${booking.status}</span>
+                </div>
+              `;
+              
+              bookingsList.appendChild(bookingItem);
+            });
+            
+            bookingsList.style.display = 'block';
+          } else {
+            noBookings.style.display = 'block';
+          }
+        }, 1000);
+      }
+      
+      // Format date for display
+      function formatDate(date) {
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      
+      // Fetch bookings on page load
+      fetchBookings();
+      
+      // Event listeners
+      refreshBtn.addEventListener('click', fetchBookings);
+      exploreCarsBtn.addEventListener('click', () => navigateTo('home'));
+    }
+    
+    // Initialize Login Page
+    function initLoginPage() {
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      
+      // Switch between tabs
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+          
+          // Update active tab
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show selected tab content
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === tabId + 'Tab') {
+              content.classList.add('active');
+            }
+          });
+        });
+      });
+      
+      // Handle login form submission
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        // In a real app, this would be an API call
+        // For demo, we'll simulate successful login
+        authToken = 'demo-token';
+        currentUser = {
+          name: 'John Smith',
+          email: email,
+          phone: '555-123-4567'
+        };
+        
+        // Store in localStorage
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Update UI
+        updateNavigation();
+        navigateTo('home');
+        showAlert('Login successful!');
+      });
+      
+      // Handle register form submission
+      registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+        const phone = document.getElementById('register-phone').value;
+        const password = document.getElementById('register-password').value;
+        
+        // In a real app, this would be an API call
+        // For demo, we'll simulate successful registration
+        authToken = 'demo-token';
+        currentUser = {
+          name: name,
+          email: email,
+          phone: phone
+        };
+        
+        // Store in localStorage
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Update UI
+        updateNavigation();
+        navigateTo('home');
+        showAlert('Registration successful!');
+      });
+    }
+    
+    // Show alert message
+    function showAlert(message) {
+      const alertBox = document.createElement('div');
+      alertBox.className = 'alert';
+      alertBox.textContent = message;
+      alertBox.style.position = 'fixed';
+      alertBox.style.top = '20px';
+      alertBox.style.left = '50%';
+      alertBox.style.transform = 'translateX(-50%)';
+      alertBox.style.backgroundColor = 'var(--primary-color)';
+      alertBox.style.color = 'white';
+      alertBox.style.padding = '1rem 2rem';
+      alertBox.style.borderRadius = '5px';
+      alertBox.style.zIndex = '9999';
+      alertBox.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+      
+      document.body.appendChild(alertBox);
+      
+      setTimeout(() => {
+        alertBox.style.opacity = '0';
+        alertBox.style.transition = 'opacity 0.5s ease';
+        
+        setTimeout(() => {
+          document.body.removeChild(alertBox);
+        }, 500);
+      }, 3000);
+    }
+    
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Navigation event listeners
+      homeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateTo('home');
+      });
+      
+      carsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateTo('home');
+        
+        // Scroll to cars section after page loads
+        setTimeout(() => {
+          const carsSection = document.querySelector('.cars-container');
+          if (carsSection) {
+            carsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      });
+      
+      dashboardLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateTo('dashboard');
+      });
+      
+      loginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (isLoggedIn()) {
+          // Logout
+          authToken = null;
+          currentUser = null;
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('currentUser');
+          updateNavigation();
+          navigateTo('home');
+          showAlert('You have been logged out');
+        } else {
+          navigateTo('login');
+        }
+      });
+      
+      // Modal event listeners
+      closeBtn.addEventListener('click', closeModal);
+      confirmBookingBtn.addEventListener('click', confirmBooking);
+      closeModalBtn.addEventListener('click', closeModal);
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+      
+      // Load home page by default
+      navigateTo('home');
+    });
+  </script>
+</body>
+</html>
